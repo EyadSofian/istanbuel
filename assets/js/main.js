@@ -186,16 +186,38 @@
       )
       .join('');
 
+    host.addEventListener('click', (e) => {
+      const shot = e.target.closest('.shot--live');
+      if (!shot) return;
+      const shown = content.hotelGallery.filter((g) => $(`[data-slot] img[src="${g.src}"]`, host));
+      const src = $('img', shot).getAttribute('src');
+      openLightbox(shown, shown.findIndex((g) => g.src === src));
+    });
+
     content.hotelGallery.forEach(async (g, i) => {
       if (!g.src) return;
       if (!(await probeImage(g.src))) return;
       const slot = $(`[data-slot="${i}"]`, host);
       if (!slot) return;
-      slot.className = 'shot';
+      slot.className = 'shot shot--live';
       slot.innerHTML =
         `<img src="${esc(g.src)}" alt="${esc(g.label)} — ${esc(trip.hotel)}" loading="lazy" decoding="async">` +
         `<span class="shot__cap">${esc(g.label)}</span>`;
     });
+  }
+
+  /** شريط صور اليوم — بدون أسماء معالم، الصور توضيحية لأجواء اليوم */
+  function renderDayShots(d, dayIndex) {
+    if (!d.images || !d.images.length) return '';
+    const shots = d.images
+      .map(
+        (src, k) => `<button type="button" class="day__shot" data-day="${dayIndex}" data-i="${k}"
+            aria-label="تكبير صورة من ${esc(d.title)}">
+            <img src="${esc(src)}" alt="${esc(d.title)}" loading="lazy" decoding="async">
+          </button>`
+      )
+      .join('');
+    return `<div class="day__shots">${shots}</div>`;
   }
 
   /* --------------------------------------------------------------- البرنامج */
@@ -230,15 +252,25 @@
               </span>
               ${icon('chevron', 'day__chev')}
             </summary>
-            <div class="day__body ${d.image ? 'day__body--media' : ''}">
-              ${d.image ? `<img class="day__img" src="${esc(d.image)}" alt="${esc(d.title)}"
-                   loading="lazy" decoding="async" width="900" height="562">` : ''}
+            <div class="day__body">
+              ${renderDayShots(d, i)}
               <ul>${items}</ul>
             </div>
           </details>
         </li>`;
       })
       .join('');
+
+    host.addEventListener('click', (e) => {
+      const shot = e.target.closest('.day__shot');
+      if (!shot) return;
+      const day = content.itinerary[+shot.dataset.day];
+      if (!day || !day.images) return;
+      openLightbox(
+        day.images.map((src) => ({ src: src, label: day.day + ' — ' + day.title })),
+        +shot.dataset.i
+      );
+    });
 
     // فتح / غلق كل الأيام
     const btn = $('#toggleDays');
@@ -301,7 +333,10 @@
       wrap.setAttribute('aria-label', 'تكبير ' + r.label);
       // الصورة كاملة بدون قص
       wrap.innerHTML = `<img src="${esc(r.src)}" alt="${esc(r.label)}" loading="lazy" decoding="async">`;
-      wrap.addEventListener('click', () => openLightbox(r.src, r.label));
+      wrap.addEventListener('click', () => {
+        const shown = content.reviews.filter((x) => $(`.review__shot img[src="${x.src}"]`));
+        openLightbox(shown, shown.findIndex((x) => x.src === r.src));
+      });
       empty.replaceWith(wrap);
       showZoomHint();
     });
@@ -496,13 +531,13 @@
     });
   }
 
-  function openLightbox(src, caption) {
+  function openLightbox(items, index) {
     const box = $('#lightbox');
-    if (!box) return;
-    lbItems = content.reviews.filter((r) => $(`.review__shot img[src="${r.src}"]`));
-    lbIndex = Math.max(0, lbItems.findIndex((r) => r.src === src));
+    if (!box || !items || !items.length) return;
+    lbItems = items;
+    lbIndex = Math.min(Math.max(index || 0, 0), items.length - 1);
     syncLbNav();
-    showLightbox(src, caption);
+    showLightbox(lbItems[lbIndex].src, lbItems[lbIndex].label);
     box.hidden = false;
     document.body.style.overflow = 'hidden';
     const x = $('.lightbox__x', box);

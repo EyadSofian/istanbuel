@@ -661,12 +661,12 @@ strong { font-weight: 800; }
   align-items: center;
   gap: 10px;
   font-family: var(--font-latin);
-  font-size: clamp(19px, 3vw, 23px);
+  font-size: clamp(18px, 2.4vw, 21px);
   font-weight: 800;
   color: var(--navy);
-  letter-spacing: .01em;
+  letter-spacing: 0;
 }
-.hotel__name .ico { color: var(--blue); width: 24px; height: 24px; }
+.hotel__name .ico { color: var(--blue); width: 22px; height: 22px; }
 .hotel__text { margin-top: 12px; color: #374151; line-height: 1.9; font-size: 15.5px; }
 .hotel__facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
 .hotel__facts li {
@@ -697,6 +697,7 @@ strong { font-weight: 800; }
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .shot:hover { transform: translateY(-2px); box-shadow: var(--sh); }
+.shot--live { cursor: zoom-in; }
 .shot img { width: 100%; height: 100%; object-fit: cover; }
 .shot__cap {
   position: absolute;
@@ -802,27 +803,28 @@ strong { font-weight: 800; }
 .day details[open] .day__chev { transform: rotate(180deg); color: var(--blue); }
 
 .day__body { padding: 0 18px 18px; }
-.day__img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: var(--r-sm);
+.day__shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 168px));
+  justify-content: start;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.day__shot {
+  padding: 0;
   border: 1px solid var(--line);
-  margin-bottom: 14px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: #F1F5F9;
+  cursor: zoom-in;
+  aspect-ratio: 4 / 3;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-@media (min-width: 700px) {
-  .day__body--media {
-    display: grid;
-    grid-template-columns: 230px minmax(0, 1fr);
-    gap: 18px;
-    align-items: start;
-  }
-  .day__body--media .day__img { margin-bottom: 0; aspect-ratio: 4 / 3; }
-  .day__body--media ul { border-top: 0; padding-top: 0; }
-}
+.day__shot:hover { transform: translateY(-2px); box-shadow: var(--sh); border-color: #D5E4F7; }
+.day__shot img { width: 100%; height: 100%; object-fit: cover; }
+
 .day__body ul { display: grid; gap: 10px; border-top: 1px dashed var(--line); padding-top: 14px; }
-.day__img + ul { border-top: 0; padding-top: 0; }
+.day__shots + ul { border-top: 0; padding-top: 0; }
 .day__body li {
   display: flex;
   align-items: flex-start;
@@ -1389,7 +1391,7 @@ body { padding-bottom: 74px; }
   .kid__prices { flex-direction: column; gap: 2px; }
 
   .incex { grid-template-columns: 1fr 1fr; }
-  .hotel__gallery { grid-template-columns: repeat(4, 1fr); }
+  .hotel__gallery { grid-template-columns: repeat(3, 1fr); }
 
   .reviews { display: block; columns: 2; column-gap: 16px; }
   .reviews > * { break-inside: avoid; margin-bottom: 16px; }
@@ -1418,8 +1420,9 @@ body { padding-bottom: 74px; }
   .hero__actions { grid-area: actions; align-self: start; }
   .pricebox { grid-area: box; position: sticky; top: calc(var(--nav-h) + 20px); }
 
-  .hotel { grid-template-columns: 380px minmax(0, 1fr); align-items: start; }
-  .hotel__gallery { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .hotel { grid-template-columns: 340px minmax(0, 1fr); align-items: start; }
+  .hotel__gallery { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .hotel__card { position: sticky; top: calc(var(--nav-h) + 20px); }
 
   .days { gap: 14px; }
   .day__title { font-size: 17px; }
