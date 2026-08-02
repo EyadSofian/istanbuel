@@ -91,15 +91,21 @@ const content = {
     ]
   },
 
-  /* معرض صور الفندق — ضع أسماء الصور الحقيقية في src ليتم عرضها */
+  /* معرض صور الفندق — صور حقيقية لفندق HEYA */
   hotelGallery: [
     { label: "واجهة الفندق", src: "assets/img/hotel/facade.jpg" },
     { label: "الغرف", src: "assets/img/hotel/room.jpg" },
     { label: "الريسبشن", src: "assets/img/hotel/reception.jpg" },
-    { label: "الإفطار / المطعم", src: "assets/img/hotel/breakfast.jpg" }
+    { label: "الإفطار / المطعم", src: "assets/img/hotel/breakfast.jpg" },
+    { label: "غرفة بسريرين", src: "assets/img/hotel/twin-room.jpg" },
+    { label: "اللوبي", src: "assets/img/hotel/lobby.jpg" }
   ],
 
-  /* البرنامج اليومي */
+  /* البرنامج اليومي
+     ------------------------------------------------------------------
+     image: صورة توضيحية لأجواء اليوم (اختيارية). الصور دي معبّرة عن طابع
+     المكان مش لقطة حرفية لمَعلم بعينه — امسح السطر لو مش عايزها.
+     ------------------------------------------------------------------ */
   itinerary: [
     {
       day: "اليوم الأول",
@@ -112,6 +118,7 @@ const content = {
     },
     {
       day: "اليوم الثاني",
+      image: "assets/img/places/bosphorus.jpg",
       title: "جولة إسطنبول التاريخية",
       items: [
         { text: "ميدان السلطان أحمد." },
@@ -125,6 +132,7 @@ const content = {
     },
     {
       day: "اليوم الثالث",
+      image: "assets/img/places/masukiye.jpg",
       title: "جولة صبنجة ومعشوقية",
       items: [
         { text: "بحيرة صبنجة." },
@@ -143,6 +151,7 @@ const content = {
     },
     {
       day: "اليوم الخامس",
+      image: "assets/img/places/princess-islands.jpg",
       title: "جولة جزيرة الأميرات (بويوك أدا)",
       items: [
         { text: "الانطلاق من كاباتاش بالعبّارة إلى جزيرة بويوك أدا." },
@@ -152,6 +161,7 @@ const content = {
     },
     {
       day: "اليوم السادس",
+      image: "assets/img/places/ortakoy.jpg",
       title: "جولة مدينة إسطنبول",
       items: [
         { text: "أورتاكوي." },

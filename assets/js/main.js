@@ -230,7 +230,11 @@
               </span>
               ${icon('chevron', 'day__chev')}
             </summary>
-            <div class="day__body"><ul>${items}</ul></div>
+            <div class="day__body ${d.image ? 'day__body--media' : ''}">
+              ${d.image ? `<img class="day__img" src="${esc(d.image)}" alt="${esc(d.title)}"
+                   loading="lazy" decoding="async" width="900" height="562">` : ''}
+              <ul>${items}</ul>
+            </div>
           </details>
         </li>`;
       })

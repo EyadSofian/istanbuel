@@ -61,7 +61,9 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
-<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/img/hero/istanbul.jpg" fetchpriority="high">
+<link rel="icon" href="assets/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 
 <body>
@@ -102,17 +104,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <header class="nav" id="nav">
   <div class="wrap nav__inner">
     <a class="brand" href="#home" aria-label="البكري أوفرسيز — الصفحة الرئيسية">
-      <svg class="brand__mark" viewBox="0 0 64 72" aria-hidden="true">
-        <path fill="currentColor" d="M9 3h21.5C42.2 3 49.5 9.6 49.5 19.4c0 6.3-3.2 11-8.6 13.3 7.4 2 12.1 7.6 12.1 15C53 58.4 45 66 32.6 66H9a6 6 0 0 1-6-6V9a6 6 0 0 1 6-6Z"/>
-        <g transform="translate(25.5 30.5) rotate(38)">
-          <path fill="#fff" d="M0-12c1.7 0 2.8 2.6 2.8 5.6v2.8L11.8 2v2.4L2.8 2.6v5l2.8 2.1v1.5L0 10 -5.6 11.2V9.7L-2.8 7.6v-5L-11.8 4.4V2l9-5.6v-2.8C-2.8-9.4-1.7-12 0-12Z"/>
-        </g>
-      </svg>
-      <span class="brand__text">
-        <span class="brand__name">ELBAKRI</span>
-        <span class="brand__sub">OVERSEAS</span>
-      </span>
-      <span class="brand__est">EST. 1982</span>
+      <img class="brand__logo" src="assets/img/logo.png" alt="البكري أوفرسيز"
+           width="682" height="170" fetchpriority="high">
     </a>
 
     <nav class="nav__links" aria-label="روابط الصفحة">
@@ -158,8 +151,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="hero" id="home">
   <div class="hero__media" id="heroMedia">
     <img class="hero__skyline" src="assets/img/hero/istanbul-skyline.svg" alt="" aria-hidden="true">
-    <!-- ضع صورة إسطنبول الحقيقية باسم istanbul.jpg داخل assets/img/hero/ وستظهر تلقائياً.
-         ولو رفعت فيديو باسم istanbul.mp4 في نفس المجلد هيشتغل كخلفية صامتة. -->
+    <!-- لو رفعت فيديو باسم istanbul.mp4 في نفس المجلد هيشتغل كخلفية صامتة بدل الصورة. -->
     <img class="hero__photo" src="assets/img/hero/istanbul.jpg" alt="" aria-hidden="true" loading="eager" decoding="async">
     <span class="hero__scrim"></span>
   </div>
@@ -424,16 +416,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <footer class="foot">
   <div class="wrap foot__inner">
     <div class="foot__brand">
-      <svg class="brand__mark brand__mark--light" viewBox="0 0 64 72" aria-hidden="true">
-        <path fill="currentColor" d="M9 3h21.5C42.2 3 49.5 9.6 49.5 19.4c0 6.3-3.2 11-8.6 13.3 7.4 2 12.1 7.6 12.1 15C53 58.4 45 66 32.6 66H9a6 6 0 0 1-6-6V9a6 6 0 0 1 6-6Z"/>
-        <g transform="translate(25.5 30.5) rotate(38)">
-          <path fill="#0B3A67" d="M0-12c1.7 0 2.8 2.6 2.8 5.6v2.8L11.8 2v2.4L2.8 2.6v5l2.8 2.1v1.5L0 10 -5.6 11.2V9.7L-2.8 7.6v-5L-11.8 4.4V2l9-5.6v-2.8C-2.8-9.4-1.7-12 0-12Z"/>
-        </g>
-      </svg>
-      <div>
-        <p class="foot__name">ELBAKRI OVERSEAS</p>
-        <p class="foot__since">البكري أوفرسيز — EST. 1982</p>
-      </div>
+      <img class="brand__logo brand__logo--light" src="assets/img/logo-light.png"
+           alt="البكري أوفرسيز" width="682" height="170" loading="lazy">
     </div>
 
     <nav class="foot__links" aria-label="روابط سريعة">
