@@ -12,9 +12,12 @@ assets/css/styles.css             التصميم
 assets/js/content.js              ← كل البيانات القابلة للتعديل (ابدأ من هنا)
 assets/js/main.js                 بناء الصفحة والتفاعلات
 assets/img/favicon.svg            أيقونة الموقع
+assets/img/og-cover.jpg           كارت المشاركة على واتساب وفيسبوك
 assets/img/hero/                  صورة/فيديو الهيرو
 assets/img/hotel/                 صور الفندق
 assets/img/reviews/               صور آراء العملاء
+vercel.json                       إعدادات النشر على فيرسل
+scripts/build.js                  تجهيز مجلد dist/ وضبط روابط المشاركة
 ```
 
 ---
@@ -121,13 +124,61 @@ const trip = {
 
 ---
 
-## 6) تشغيل محلي
+## 6) النشر على Vercel
+
+المشروع مجهّز للنشر على فيرسل على طول — من غير أي إعدادات في الواجهة.
+
+1. **New Project** → اربط الريبو `EyadSofian/istanbuel`.
+2. فيرسل هيقرا `vercel.json` لوحده:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+3. **Domains** → ضيف الساب دومين بتاعك (مثال: `istanbul.yourdomain.com`)
+   وحط عند مزوّد الدومين ريكورد `CNAME` على `cname.vercel-dns.com`.
+
+### ⚠️ خطوة مهمة: متغيّر SITE_URL
+
+في **Settings → Environment Variables** ضيف:
+
+| Key | Value |
+|---|---|
+| `SITE_URL` | `https://istanbul.yourdomain.com` |
+
+ليه ده مهم؟ لأن معاينة اللينك على واتساب وفيسبوك مبتشتغلش بروابط نسبية —
+`scripts/build.js` بيستخدم القيمة دي عشان يحوّل وسوم `og:image` و`og:url`
+و`canonical` لروابط كاملة وقت البناء.
+
+لو مضفتهوش، البناء هينجح عادي والصفحة هتشتغل، لكن **صورة المعاينة مش هتظهر
+لما حد يبعت اللينك على واتساب** — وده مهم جداً لأن كل الحجز ماشي على واتساب.
+(لو نسيت، فيرسل بيحاول يستخدم دومين الإنتاج تلقائياً، بس تحديد `SITE_URL`
+بنفسك أضمن.)
+
+### صورة المعاينة
+
+`assets/img/og-cover.jpg` (1200×630) — كارت المشاركة اللي بيظهر على واتساب.
+فيه اسم البرنامج والتاريخ والسعر والشعار. لو غيّرت السعر أو التاريخ، استبدل
+الصورة دي بواحدة محدّثة.
+
+### بعد أي تعديل
+
+اعمل push للبرانش، وفيرسل هينشر لوحده. ملفات `content.js` و`styles.css`
+مضبوطة على `must-revalidate` فأي تعديل بيظهر فوراً من غير ما العميل يمسح الكاش.
+
+---
+
+## 7) تشغيل محلي
 
 أي سيرفر ثابت يكفي:
 
 ```bash
-python3 -m http.server 8080
+npm run dev
 # افتح http://localhost:8080
+```
+
+ولاختبار نسخة النشر بالظبط:
+
+```bash
+SITE_URL="https://istanbul.yourdomain.com" npm run build
+cd dist && python3 -m http.server 8080
 ```
 
 ---
