@@ -606,48 +606,6 @@ strong { font-weight: 800; }
 }
 .kid__cur { font-family: var(--font); font-size: 14px; font-weight: 700; color: #374151; margin-inline-start: 4px; }
 
-/* -------------------------------------------------------------- 10. Compare */
-.compare {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  box-shadow: var(--sh);
-  overflow: hidden;
-}
-.compare table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.compare thead th {
-  padding: 15px 18px;
-  font-size: 14.5px;
-  font-weight: 800;
-  text-align: right;
-  color: var(--navy);
-  background: var(--navy-tint);
-  border-bottom: 1px solid var(--line);
-}
-.compare thead th.is-ours { background: var(--navy); color: #fff; }
-.compare thead th.is-others { color: var(--muted); }
-.compare tbody td {
-  padding: 14px 18px;
-  font-size: 14.5px;
-  border-bottom: 1px solid #F1F5F9;
-  vertical-align: middle;
-}
-.compare tbody tr:last-child td { border-bottom: 0; }
-.compare tbody tr:nth-child(even) td { background: #FCFDFE; }
-.compare .c-item { font-weight: 700; color: #1F2937; width: 26%; }
-.compare .c-ours, .compare .c-others { width: 37%; }
-.compare .c-ours {
-  font-weight: 800;
-  color: var(--navy);
-  background: var(--blue-tint) !important;
-  border-inline: 1px solid var(--blue-tint-2);
-}
-.compare .c-others { color: var(--muted); font-weight: 500; }
-.compare .mark { display: inline-flex; align-items: center; gap: 8px; }
-.compare .mark .ico { width: 17px; height: 17px; flex: none; }
-.compare .c-ours .ico { color: var(--blue); }
-.compare .c-others .ico { color: #9CA3AF; }
-
 /* ---------------------------------------------------------------- 11. Hotel */
 .hotel { display: grid; gap: 20px; }
 .hotel__card {
@@ -897,58 +855,38 @@ strong { font-weight: 800; }
 .incex__card--no .incex__list li { color: var(--muted); }
 
 /* -------------------------------------------------------------- 14. Reviews */
-/* صور الآراء بتتعرض بالكامل من غير قص، فالارتفاعات بتختلف —
-   عشان كده بنستخدم أعمدة (masonry) بدل شبكة بصفوف متساوية. */
-.reviews { display: grid; gap: 14px; }
+.reviews { display: grid; gap: 16px; }
 
 .review {
+  position: relative;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--sh-sm);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform .2s ease, box-shadow .2s ease;
+  padding: clamp(22px, 3vw, 28px);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.review:hover { transform: translateY(-3px); box-shadow: var(--sh-lg); }
+.review:hover { transform: translateY(-3px); box-shadow: var(--sh-lg); border-color: #D7E3F0; }
 
-.review__head {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 13px 16px;
-  border-bottom: 1px solid var(--line);
+.review__q { width: 30px; height: 30px; color: var(--blue-tint-2); margin-bottom: 10px; }
+
+.review__text {
+  font-size: 15.5px;
+  line-height: 1.9;
+  color: #374151;
 }
-.review__head .ico { width: 20px; height: 20px; color: var(--blue); flex: none; }
-.review__head .review__label { margin-inline-end: auto; }
-.review__label { font-size: 13.5px; font-weight: 800; color: var(--navy); }
-/* the screenshot is never cropped: full image, natural height */
-.review__shot { display: block; background: #F8FAFC; cursor: zoom-in; }
-.review__shot img { width: 100%; height: auto; }
 
-.review__empty {
-  display: grid;
-  place-content: center;
-  gap: 9px;
-  text-align: center;
-  padding: 42px 20px;
-  min-height: 240px;
-  background: repeating-linear-gradient(45deg, #F1F5F9 0 10px, #F8FAFC 10px 20px);
-}
-.review__empty .ico { width: 30px; height: 30px; color: #94A3B8; margin-inline: auto; }
-
-.reviews__hint {
+.review__by {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
   margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
 }
-.reviews__hint .ico { width: 16px; height: 16px; color: var(--blue); }
+.review__name { font-size: 15px; font-weight: 800; color: var(--navy); }
+.review__trip { font-size: 13px; color: var(--muted); }
 
 /* --------------------------------------------------------------- 15. Papers */
 .papers { display: grid; gap: 12px; }
@@ -1052,15 +990,6 @@ strong { font-weight: 800; }
 .notice--warn .ico { color: var(--sky); }
 .notice--warn strong { color: #fff; }
 
-.askbox {
-  margin-top: 22px;
-  text-align: center;
-  background: var(--blue-tint);
-  border: 1px solid var(--blue-tint-2);
-  border-radius: var(--r-lg);
-  padding: clamp(22px, 4vw, 32px);
-}
-.askbox__title { font-size: clamp(18px, 3vw, 22px); font-weight: 800; color: var(--navy); margin-bottom: 16px; }
 
 /* ------------------------------------------------------------------ 16. FAQ */
 .faq { display: grid; gap: 10px; }
@@ -1142,7 +1071,21 @@ strong { font-weight: 800; }
 .foot__links { display: flex; flex-wrap: wrap; gap: 6px 20px; }
 .foot__links a { font-size: 14.5px; font-weight: 600; color: #C7D8E6; }
 .foot__links a:hover { color: #fff; }
-.foot__contact .btn { direction: ltr; }
+.foot__phone {
+  direction: ltr;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-latin);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 100px;
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.foot__phone:hover { border-color: rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .06); }
 .foot__bottom {
   display: flex;
   flex-wrap: wrap;
@@ -1393,8 +1336,7 @@ body { padding-bottom: 74px; }
   .incex { grid-template-columns: 1fr 1fr; }
   .hotel__gallery { grid-template-columns: repeat(3, 1fr); }
 
-  .reviews { display: block; columns: 2; column-gap: 16px; }
-  .reviews > * { break-inside: avoid; margin-bottom: 16px; }
+  .reviews { grid-template-columns: 1fr 1fr; }
 
   .brand__logo { height: 36px; }
 
@@ -1427,52 +1369,12 @@ body { padding-bottom: 74px; }
   .days { gap: 14px; }
   .day__title { font-size: 17px; }
 
-  .reviews { columns: 3; column-gap: 18px; }
-  .reviews > * { margin-bottom: 18px; }
+  .reviews { grid-template-columns: repeat(3, 1fr); gap: 18px; }
 }
 
 /* ============================================================== 26. ≥1180px */
 @media (min-width: 1180px) {
   .hero__inner { grid-template-columns: minmax(0, 1fr) 400px; gap: 24px 60px; }
-}
-
-/* ================================================== 27. Compare → cards on mobile */
-@media (max-width: 767px) {
-  .compare { border: 0; background: none; box-shadow: none; border-radius: 0; }
-  .compare table, .compare tbody, .compare tr, .compare td { display: block; width: 100%; }
-  .compare thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-  .compare tbody tr {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    box-shadow: var(--sh-xs);
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .compare tbody td { border-bottom: 0; padding: 12px 15px; background: #fff !important; }
-
-  .compare .c-item {
-    width: auto;
-    background: var(--navy-tint) !important;
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--navy);
-    padding: 10px 15px;
-    border-bottom: 1px solid var(--line);
-  }
-  .compare .c-ours, .compare .c-others { border-inline: 0; }
-  .compare .c-ours { background: var(--blue-tint) !important; }
-  .compare .c-ours::before,
-  .compare .c-others::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 11.5px;
-    font-weight: 800;
-    color: var(--muted);
-    margin-bottom: 3px;
-  }
-  .compare .c-ours::before { color: var(--blue); }
 }
 
 /* ================================================================= 28. A11y */
@@ -1488,7 +1390,7 @@ body { padding-bottom: 74px; }
 
 /* ================================================================ 29. Print */
 @media print {
-  .nav, .fab, .mobar, .modal, .lightbox, .hero__media, .section__cta, .askbox .btn { display: none !important; }
+  .nav, .fab, .mobar, .modal, .lightbox, .hero__media, .section__cta { display: none !important; }
   body { padding: 0; background: #fff; }
   .hero { background: #fff; color: var(--text); }
   .hero__copy, .hero__title { color: var(--navy); }

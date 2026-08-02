@@ -107,10 +107,6 @@
             </p>
             <p class="price__save">توفّر <span class="num">${money(save)}</span> جنيه</p>
           </div>
-          <a class="btn btn--wa btn--block" href="${waLink(room.title + ' - ' + room.code)}"
-             target="_blank" rel="noopener" data-cta="price-${room.key}">
-            ${icon('whatsapp')} احجز ${esc(room.title)}
-          </a>
         </article>`;
       })
       .join('');
@@ -136,39 +132,6 @@
         </article>`;
       })
       .join('');
-  }
-
-  /* -------------------------------------------------------------- المقارنة */
-  function renderCompare() {
-    const host = $('#compareTable');
-    if (!host) return;
-    const cols = content.comparison.columns;
-
-    const rows = content.comparison.rows
-      .map(
-        (r) => `<tr>
-          <td class="c-item">${esc(r[0])}</td>
-          <td class="c-ours" data-label="${esc(cols[1])}">
-            <span class="mark">${icon('check')}<span>${esc(r[1])}</span></span>
-          </td>
-          <td class="c-others" data-label="${esc(cols[2])}">
-            <span class="mark">${icon('minus')}<span>${esc(r[2])}</span></span>
-          </td>
-        </tr>`
-      )
-      .join('');
-
-    host.innerHTML = `<table>
-      <caption class="sr-only">مقارنة بين رحلتنا والرحلات الأخرى</caption>
-      <thead>
-        <tr>
-          <th scope="col">${esc(cols[0])}</th>
-          <th scope="col" class="is-ours">${esc(cols[1])}</th>
-          <th scope="col" class="is-others">${esc(cols[2])}</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
   }
 
   /* ---------------------------------------------------------- معرض الفندق */
@@ -302,54 +265,28 @@
   /* --------------------------------------------------------- آراء العملاء */
   function renderReviews() {
     const host = $('#reviewsGrid');
+    const section = document.getElementById('reviews');
     if (!host) return;
+
+    // مفيش آراء متكتوبة لسه؟ القسم كله ما بيظهرش بدل ما نحط كلام مش حقيقي
+    const empty = !content.reviews || !content.reviews.length;
+    if (section) section.hidden = empty;
+    // مفيش داعي لرابط في القائمة لقسم مخفي
+    $$('a[href="#reviews"]').forEach((a) => { a.hidden = empty; });
+    if (empty) return;
 
     host.innerHTML = content.reviews
       .map(
-        (r, i) => `<article class="review reveal" data-review="${i}">
-          <header class="review__head">
-            ${icon('quote')}
-            <span class="review__label">${esc(r.label)}</span>
-          </header>
-          <div class="review__empty">
-            ${icon('image')}
-            <span class="shot__label">${esc(r.label)}</span>
-            <span class="shot__hint">مكان مخصص لصورة رأي العميل</span>
-          </div>
+        (r) => `<article class="review reveal">
+          ${icon('quote', 'review__q')}
+          <p class="review__text">${esc(r.text)}</p>
+          <footer class="review__by">
+            <span class="review__name">${esc(r.name)}</span>
+            ${r.trip ? `<span class="review__trip">${esc(r.trip)}</span>` : ''}
+          </footer>
         </article>`
       )
       .join('');
-
-    content.reviews.forEach(async (r, i) => {
-      if (!r.src) return;
-      if (!(await probeImage(r.src))) return;
-      const card = $(`[data-review="${i}"]`, host);
-      if (!card) return;
-      const empty = $('.review__empty', card);
-      if (!empty) return;
-      const wrap = document.createElement('button');
-      wrap.type = 'button';
-      wrap.className = 'review__shot';
-      wrap.setAttribute('aria-label', 'تكبير ' + r.label);
-      // الصورة كاملة بدون قص
-      wrap.innerHTML = `<img src="${esc(r.src)}" alt="${esc(r.label)}" loading="lazy" decoding="async">`;
-      wrap.addEventListener('click', () => {
-        const shown = content.reviews.filter((x) => $(`.review__shot img[src="${x.src}"]`));
-        openLightbox(shown, shown.findIndex((x) => x.src === r.src));
-      });
-      empty.replaceWith(wrap);
-      showZoomHint();
-    });
-  }
-
-  /** يظهر مرة واحدة بس لما تكون فيه صور آراء حقيقية */
-  function showZoomHint() {
-    const host = $('#reviewsGrid');
-    if (!host || $('.reviews__hint')) return;
-    const p = document.createElement('p');
-    p.className = 'reviews__hint';
-    p.innerHTML = icon('image') + '<span>اضغط على الصورة لتكبيرها</span>';
-    host.insertAdjacentElement('afterend', p);
   }
 
   /* ------------------------------------------------ الأوراق والتصاريح */
@@ -395,6 +332,16 @@
         </details>`
       )
       .join('');
+  }
+
+  /** يوزّع الخلفيات بالتبادل على الأقسام الظاهرة بس */
+  function restripeSections() {
+    let i = 0;
+    $$('main > section.section').forEach((sec) => {
+      if (sec.hidden) return;
+      sec.classList.toggle('section--alt', i % 2 === 1);
+      i += 1;
+    });
   }
 
   /* ------------------------------------------------------------- الناف بار */
@@ -653,7 +600,6 @@
     renderTrust();
     renderPrices();
     renderKids();
-    renderCompare();
     renderHotelGallery();
     renderItinerary();
     renderIncludes();
@@ -661,6 +607,7 @@
     renderPapers();
     renderFaq();
 
+    restripeSections();  // بعد ما نعرف الأقسام المخفية
     bindData();          // بعد الرندر علشان يشمل العناصر الجديدة
     initNav();
     initHeroMedia();
