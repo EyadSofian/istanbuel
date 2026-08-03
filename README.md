@@ -39,7 +39,7 @@ const trip = {
   startingPrice: 35000,
   discountPercent: 10,
   prices: {
-    SGL:  { before: 50000, after: 45000 },
+    SGL:  { before: 50000, after: 46000 },
     DBL:  { before: 40778, after: 36700 },
     TRPL: { before: 38889, after: 35000 }
   },
