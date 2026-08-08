@@ -24,10 +24,24 @@
   const dot = () =>
     '<svg class="ico" viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>';
 
+  /* الموعد المختار — مصدر الحقيقة الوحيد لكل الأسعار والتواريخ في الصفحة */
+  let dep = trip.departures[0];
+
+  /** أقل سعر في موعد معيّن (الغرفة الثلاثية) */
+  const lowest = (d) => d.prices.TRPL.after;
+
   const waLink = (extra) => {
-    const msg = trip.whatsappMessage + (extra ? ' — ' + extra : '');
+    const msg =
+      trip.whatsappMessage.replace('{الموعد}', dep.dateRange) +
+      (extra ? ' — ' + extra : '');
     return 'https://wa.me/' + trip.whatsappNumber + '?text=' + encodeURIComponent(msg);
   };
+
+  /** الكروت اللي اتعمل ليها re-render بعد التحميل بتظهر على طول من غير أنيميشن.
+      لازمة لأن initReveal بيراقب عناصر .reveal مرة واحدة بس وقت التحميل،
+      وأي عنصر جديد بعد كده هيفضل opacity:0 للأبد. */
+  const revealNow = (sel) =>
+    $$(sel + ' .reveal').forEach((el) => el.classList.add('is-in'));
 
   /** يتأكد إن الصورة موجودة فعلاً قبل ما يعرضها */
   const probeImage = (src) =>
@@ -47,10 +61,12 @@
     });
 
     const values = {
-      startingPrice: money(trip.startingPrice),
+      startingPrice: money(lowest(dep)),
       discountPercent: String(trip.discountPercent),
-      duration: trip.duration,
-      dateRange: trip.dateRange,
+      duration: dep.duration,
+      dateRange: dep.dateRange,
+      dateShort: dep.dateShort,
+      nightsLabel: dep.nights + ' ليالٍ',
       hotel: trip.hotel,
       phone: content.brand.phoneDisplay
     };
@@ -77,6 +93,104 @@
       .join('');
   }
 
+  /* ------------------------------------------------- مواعيد السفر (التبويبات) */
+  function renderDepartureTabs() {
+    const host = $('#departureTabs');
+    if (!host) return;
+
+    host.innerHTML = trip.departures
+      .map(
+        (d) => `<button type="button" role="tab" class="dep" id="dep-${esc(d.id)}"
+          data-dep="${esc(d.id)}" aria-controls="departurePanel"
+          aria-selected="false" tabindex="-1">
+          <span class="dep__month">${esc(d.tab)}</span>
+          <span class="dep__from">من <span class="num">${money(lowest(d))}</span> جنيه</span>
+        </button>`
+      )
+      .join('');
+
+    host.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-dep]');
+      if (btn) selectDeparture(btn.dataset.dep);
+    });
+
+    // في الـRTL السهم الشمال بيروح للتبويب اللي بعده
+    host.addEventListener('keydown', (e) => {
+      let dir = 0;
+      if (e.key === 'ArrowLeft') dir = 1;
+      else if (e.key === 'ArrowRight') dir = -1;
+      else return;
+      e.preventDefault();
+      const list = trip.departures;
+      const at = list.findIndex((d) => d.id === dep.id);
+      const next = list[(at + dir + list.length) % list.length];
+      selectDeparture(next.id);
+      const btn = $('#dep-' + next.id, host);
+      if (btn) btn.focus();
+    });
+
+    syncTabs();
+  }
+
+  /** يظبط حالة التبويبات على الموعد المختار */
+  function syncTabs() {
+    $$('#departureTabs .dep').forEach((btn) => {
+      const on = btn.dataset.dep === dep.id;
+      btn.classList.toggle('is-active', on);
+      btn.setAttribute('aria-selected', String(on));
+      btn.tabIndex = on ? 0 : -1;
+    });
+    const panel = $('#departurePanel');
+    if (panel) panel.setAttribute('aria-labelledby', 'dep-' + dep.id);
+  }
+
+  function selectDeparture(id) {
+    const next = trip.departures.find((d) => d.id === id);
+    if (!next || next === dep) return;
+    dep = next;
+    syncTabs();
+    renderPrices();
+    renderFlights();
+    revealNow('#departurePanel');   // العناصر الجديدة مش متراقبة من initReveal
+    bindData();                     // يعيد ربط [data-wa] و[data-bind] بعد الرسم
+  }
+
+  /* --------------------------------------------------------- مواعيد الطيران */
+  function renderFlights() {
+    const host = $('#flightCard');
+    if (!host) return;
+
+    const leg = (label, t) => `<div class="leg">
+      <p class="leg__label">${icon('plane')}<span>${esc(label)}</span></p>
+      <p class="leg__times">
+        <span class="leg__time"><span class="leg__cap">إقلاع</span><span class="num">${esc(t.depart)}</span></span>
+        ${icon('arrow', 'leg__arrow')}
+        <span class="leg__time"><span class="leg__cap">وصول</span><span class="num">${esc(t.arrive)}</span></span>
+      </p>
+    </div>`;
+
+    const head = `<div class="flights__head">
+      <p class="flights__date">${icon('calendar')}<span>${esc(dep.dateRange)}</span></p>
+      <span class="flights__dur">${esc(dep.duration)}</span>
+    </div>`;
+
+    // مفيش مواعيد متأكدة لسه؟ نقولها صريح بدل ما نخترع مواعيد
+    const body = dep.flights
+      ? `<div class="flights__legs">
+          ${leg('الذهاب', dep.flights.outbound)}
+          ${leg('العودة', dep.flights.inbound)}
+        </div>
+        <p class="flights__note">المواعيد بالتوقيت المحلي وقابلة للتغيير من شركة الطيران.</p>`
+      : `<div class="flights__tba">
+          <p>مواعيد الطيران لموعد ${esc(dep.tab)} بتتأكد قبل السفر — تواصل معانا لمعرفة آخر تحديث.</p>
+          <a class="btn btn--wa btn--sm" href="#" data-wa data-cta="flights">
+            ${icon('whatsapp')}اسأل عن مواعيد الطيران
+          </a>
+        </div>`;
+
+    host.innerHTML = head + body;
+  }
+
   /* --------------------------------------------------------------- الأسعار */
   function renderPrices() {
     const host = $('#priceCards');
@@ -84,7 +198,7 @@
 
     host.innerHTML = content.roomTypes
       .map((room) => {
-        const p = trip.prices[room.key];
+        const p = dep.prices[room.key];
         const save = p.before - p.after;
         return `<article class="price ${room.highlight ? 'price--top' : ''} reveal">
           ${room.highlight ? `<span class="price__flag">${esc(room.highlightLabel)}</span>` : ''}
@@ -550,7 +664,6 @@
 
   /* ------------------------------------------ بيانات منظمة لمحركات البحث */
   function injectSchema() {
-    const price = trip.startingPrice;
     const data = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -558,8 +671,8 @@
           '@type': 'TouristTrip',
           name: trip.name,
           description:
-            trip.duration + ' ' + trip.dateRange + ' مع إقامة في ' + trip.hotel +
-            ' وبرنامج سياحي منظم داخل إسطنبول.',
+            trip.name + ' — ' + trip.departures.length + ' مواعيد للسفر مع إقامة في ' +
+            trip.hotel + ' وبرنامج سياحي منظم داخل إسطنبول.',
           touristType: 'Leisure',
           itinerary: {
             '@type': 'ItemList',
@@ -571,13 +684,14 @@
             }))
           },
           provider: { '@type': 'TravelAgency', name: content.brand.name },
-          offers: {
+          offers: trip.departures.map((d) => ({
             '@type': 'Offer',
-            price: price,
+            name: d.dateRange,
+            price: lowest(d),
             priceCurrency: 'EGP',
             availability: 'https://schema.org/InStock',
-            url: waLink()
-          }
+            url: 'https://wa.me/' + trip.whatsappNumber
+          }))
         },
         {
           '@type': 'FAQPage',
@@ -598,6 +712,8 @@
   /* ------------------------------------------------------------------ init */
   function init() {
     renderTrust();
+    renderDepartureTabs();
+    renderFlights();
     renderPrices();
     renderKids();
     renderHotelGallery();
